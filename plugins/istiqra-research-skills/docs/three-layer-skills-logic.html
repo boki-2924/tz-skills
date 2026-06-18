@@ -1,0 +1,648 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Istiqra Research Skills 三层架构说明</title>
+  <style>
+    :root {
+      --bg: #eef4f8;
+      --ink: #0f172a;
+      --muted: #64748b;
+      --line: #dbe7f3;
+      --panel: #ffffff;
+      --utility: #2563eb;
+      --workflow: #0f9f8f;
+      --usecase: #7c3aed;
+      --accent: #f59e0b;
+      --ok: #16a34a;
+      --shadow: 0 18px 48px rgba(15, 23, 42, .10);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: radial-gradient(circle at top left, #dff2ff 0, transparent 34rem), var(--bg);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", Arial, sans-serif;
+      line-height: 1.65;
+    }
+    a { color: #1d4ed8; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .page {
+      width: min(1180px, calc(100% - 48px));
+      margin: 0 auto;
+      padding: 32px 0 56px;
+    }
+    .hero {
+      background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 55%, #0891b2 100%);
+      color: white;
+      border-radius: 18px;
+      padding: 40px 44px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      position: relative;
+    }
+    .hero::after {
+      content: "";
+      position: absolute;
+      right: -110px;
+      top: -110px;
+      width: 300px;
+      height: 300px;
+      border-radius: 50%;
+      border: 42px solid rgba(255, 255, 255, .10);
+    }
+    .eyebrow {
+      color: #bae6fd;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+    h1 {
+      margin: 10px 0 14px;
+      font-size: 34px;
+      line-height: 1.22;
+      letter-spacing: 0;
+    }
+    .hero p {
+      max-width: 840px;
+      margin: 0;
+      color: #e0f2fe;
+      font-size: 16px;
+    }
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+      margin: 18px 0 28px;
+    }
+    .metric {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 18px;
+      box-shadow: 0 10px 28px rgba(15, 23, 42, .07);
+    }
+    .metric b {
+      display: block;
+      font-size: 28px;
+      line-height: 1;
+      margin: 8px 0;
+    }
+    .metric span { color: var(--muted); font-size: 13px; }
+    section { margin-top: 28px; }
+    .section-title {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 20px;
+      margin-bottom: 14px;
+    }
+    h2 {
+      margin: 0;
+      font-size: 24px;
+      line-height: 1.3;
+    }
+    .note {
+      color: var(--muted);
+      font-size: 14px;
+      max-width: 680px;
+      margin: 0;
+    }
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 20px;
+      box-shadow: 0 12px 32px rgba(15, 23, 42, .08);
+    }
+    .card h3 {
+      margin: 0 0 8px;
+      font-size: 18px;
+    }
+    .card p { margin: 8px 0 0; color: #475569; }
+    .layer {
+      border-top: 6px solid var(--utility);
+      min-height: 285px;
+    }
+    .layer.workflow { border-color: var(--workflow); }
+    .layer.usecase { border-color: var(--usecase); }
+    .layer small {
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 9px;
+      border-radius: 999px;
+      background: #eff6ff;
+      color: #1d4ed8;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .workflow small { background: #ecfdf5; color: #047857; }
+    .usecase small { background: #f5f3ff; color: #6d28d9; }
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+    .chip {
+      border: 1px solid #cbd5e1;
+      background: #f8fafc;
+      color: #334155;
+      border-radius: 999px;
+      padding: 5px 10px;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+    .chip.utility { border-color: #bfdbfe; background: #eff6ff; color: #1d4ed8; }
+    .chip.workflow { border-color: #99f6e4; background: #f0fdfa; color: #0f766e; }
+    .chip.usecase { border-color: #ddd6fe; background: #f5f3ff; color: #6d28d9; }
+    .architecture {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: var(--shadow);
+      overflow-x: auto;
+    }
+    .arch-svg { min-width: 1000px; width: 100%; height: auto; display: block; }
+    .sequence {
+      counter-reset: step;
+      display: grid;
+      gap: 12px;
+    }
+    .step {
+      display: grid;
+      grid-template-columns: 58px 1fr 220px;
+      gap: 14px;
+      align-items: stretch;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 14px;
+      box-shadow: 0 10px 26px rgba(15, 23, 42, .06);
+    }
+    .step::before {
+      counter-increment: step;
+      content: counter(step);
+      display: grid;
+      place-items: center;
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      background: #0f172a;
+      color: white;
+      font-weight: 900;
+      margin-top: 2px;
+    }
+    .step h3 { margin: 0 0 4px; font-size: 17px; }
+    .step p { margin: 0; color: #475569; }
+    .step .outcome {
+      border-left: 3px solid var(--ok);
+      padding-left: 12px;
+      color: #166534;
+      font-size: 13px;
+      background: #f0fdf4;
+      border-radius: 8px;
+      padding-top: 8px;
+      padding-bottom: 8px;
+      align-self: center;
+    }
+    .sample {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .screenshot {
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      overflow: hidden;
+      background: white;
+      box-shadow: 0 12px 32px rgba(15, 23, 42, .08);
+    }
+    .screenshot img {
+      display: block;
+      width: 100%;
+      height: 230px;
+      object-fit: cover;
+      object-position: top left;
+    }
+    .screenshot figcaption {
+      padding: 12px 14px;
+      font-size: 13px;
+      color: #475569;
+      border-top: 1px solid var(--line);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 12px 32px rgba(15, 23, 42, .06);
+    }
+    th, td {
+      padding: 13px 14px;
+      border-bottom: 1px solid #e8eef6;
+      text-align: left;
+      vertical-align: top;
+      font-size: 14px;
+    }
+    th {
+      background: #f8fafc;
+      color: #334155;
+      font-size: 13px;
+    }
+    tr:last-child td { border-bottom: 0; }
+    code {
+      background: #f1f5f9;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      padding: 2px 5px;
+      font-family: "SFMono-Regular", Consolas, monospace;
+      font-size: 12px;
+    }
+    .callout {
+      background: #fffbeb;
+      border: 1px solid #fde68a;
+      color: #78350f;
+      border-radius: 14px;
+      padding: 16px 18px;
+    }
+    .footer {
+      margin-top: 30px;
+      color: var(--muted);
+      font-size: 13px;
+      text-align: center;
+    }
+    @media (max-width: 900px) {
+      .page { width: min(100% - 28px, 1180px); }
+      .hero { padding: 30px 24px; }
+      h1 { font-size: 27px; }
+      .metrics, .grid-3, .grid-2, .sample { grid-template-columns: 1fr; }
+      .step { grid-template-columns: 48px 1fr; }
+      .step .outcome { grid-column: 2; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="hero">
+      <div class="eyebrow">ISTIQRA RESEARCH SKILLS</div>
+      <h1>三层 Skills 逻辑：从原子接口到业务场景</h1>
+      <p>
+        这套插件把文献检索、Doris 只读查询、MinIO 原文读取、证据包、图表、文献地图、专家机构图谱和知识库巡检拆成三层：
+        utility 负责可验证的原子能力，workflow 负责稳定编排，use-case 负责把用户意图变成完整交付。
+      </p>
+    </header>
+
+    <div class="metrics">
+      <div class="metric"><span>Utilities</span><b>14</b><span>最小可调用能力，直接接接口或渲染器</span></div>
+      <div class="metric"><span>Workflows</span><b>7</b><span>把多个 utility 串成可复用过程</span></div>
+      <div class="metric"><span>Use-cases</span><b>4</b><span>面向真实任务的最终入口</span></div>
+      <div class="metric"><span>Verified Outputs</span><b>4</b><span>已用真实主题跑出 HTML 页面</span></div>
+    </div>
+
+    <section>
+      <div class="section-title">
+        <h2>一眼看懂三层关系</h2>
+        <p class="note">用户通常只点 use-case；use-case 决定业务顺序；workflow 复用过程；utility 执行最小动作。这样不会把所有 API、所有文档和所有渲染逻辑塞进一个巨大的 skill。</p>
+      </div>
+      <div class="architecture">
+        <svg class="arch-svg" viewBox="0 0 1120 520" role="img" aria-label="三层 skills 架构图">
+          <defs>
+            <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="#64748b"></path>
+            </marker>
+            <filter id="shadow"><feDropShadow dx="0" dy="8" stdDeviation="8" flood-opacity=".14"/></filter>
+          </defs>
+          <rect x="30" y="32" width="1060" height="116" rx="20" fill="#f5f3ff" stroke="#ddd6fe" filter="url(#shadow)"/>
+          <text x="60" y="74" fill="#6d28d9" font-size="20" font-weight="800">Use-case 层：用户真正点名的业务入口</text>
+          <text x="60" y="106" fill="#475569" font-size="14">专题文献综述助手 / 文献地图生成器 / 专家机构关系图谱 / 知识库运维巡检</text>
+          <rect x="70" y="168" width="980" height="116" rx="20" fill="#f0fdfa" stroke="#99f6e4" filter="url(#shadow)"/>
+          <text x="100" y="210" fill="#0f766e" font-size="20" font-weight="800">Workflow 层：固定业务步骤与中间产物</text>
+          <text x="100" y="242" fill="#475569" font-size="14">组装证据包、深读文献、生成引用预览、分析语料、构建地图、构建图谱、巡检知识库</text>
+          <rect x="110" y="304" width="900" height="154" rx="20" fill="#eff6ff" stroke="#bfdbfe" filter="url(#shadow)"/>
+          <text x="140" y="346" fill="#1d4ed8" font-size="20" font-weight="800">Utility 层：可独立验证的原子能力</text>
+          <text x="140" y="378" fill="#475569" font-size="14">检索接口、Doris 只读 SQL、文档/chunk 查询、embedding 查询、MinIO 读取、HTML/图表/地图/图谱渲染</text>
+          <line x1="560" y1="148" x2="560" y2="168" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"/>
+          <line x1="560" y1="284" x2="560" y2="304" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"/>
+          <text x="780" y="160" fill="#64748b" font-size="13">选择业务路线</text>
+          <text x="780" y="296" fill="#64748b" font-size="13">调用具体工具</text>
+          <rect x="140" y="404" width="146" height="32" rx="16" fill="#dbeafe"/><text x="213" y="425" text-anchor="middle" fill="#1d4ed8" font-size="12">retrieval search</text>
+          <rect x="300" y="404" width="146" height="32" rx="16" fill="#dbeafe"/><text x="373" y="425" text-anchor="middle" fill="#1d4ed8" font-size="12">Doris readonly</text>
+          <rect x="460" y="404" width="146" height="32" rx="16" fill="#dbeafe"/><text x="533" y="425" text-anchor="middle" fill="#1d4ed8" font-size="12">KB document/chunk</text>
+          <rect x="620" y="404" width="146" height="32" rx="16" fill="#dbeafe"/><text x="693" y="425" text-anchor="middle" fill="#1d4ed8" font-size="12">MinIO object</text>
+          <rect x="780" y="404" width="146" height="32" rx="16" fill="#dbeafe"/><text x="853" y="425" text-anchor="middle" fill="#1d4ed8" font-size="12">HTML renderers</text>
+        </svg>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-title">
+        <h2>三层分别解决什么问题</h2>
+        <p class="note">分层不是为了形式感，而是为了让模型调用时少犯错：入口清楚、步骤清楚、能力边界清楚。</p>
+      </div>
+      <div class="grid-3">
+        <article class="card layer">
+          <small>UTILITY</small>
+          <h3>原子能力：最小、可跑、可验证</h3>
+          <p>直接面对接口或渲染动作。它不负责完整业务，只保证“这一步能安全做好”。例如只读 SQL 只允许 SELECT/SHOW/DESC，MinIO 只负责读取对象，图表渲染只负责把统计数据变成 HTML。</p>
+          <div class="chips">
+            <span class="chip utility">istiqra-retrieval-search</span>
+            <span class="chip utility">doris-sql-readonly</span>
+            <span class="chip utility">kb-document-query</span>
+            <span class="chip utility">kb-chunk-query</span>
+            <span class="chip utility">minio-object-get</span>
+            <span class="chip utility">html-report-renderer</span>
+            <span class="chip utility">graph-renderer</span>
+          </div>
+        </article>
+        <article class="card layer workflow">
+          <small>WORKFLOW</small>
+          <h3>过程编排：稳定复用的中间任务</h3>
+          <p>把多个 utility 按固定顺序组合，产出中间文件。它不直接等于最终产品，但可以被多个 use-case 复用。例如证据包既能服务专题综述，也能服务文献地图和专家图谱。</p>
+          <div class="chips">
+            <span class="chip workflow">assemble-evidence-pack</span>
+            <span class="chip workflow">analyze-literature-corpus</span>
+            <span class="chip workflow">build-literature-map</span>
+            <span class="chip workflow">build-entity-graph</span>
+            <span class="chip workflow">audit-knowledge-base</span>
+          </div>
+        </article>
+        <article class="card layer usecase">
+          <small>USE-CASE</small>
+          <h3>业务入口：用户看到的完整交付</h3>
+          <p>理解用户意图，选择 workflow，组织最终结果和说明。它应该告诉模型“先做什么、再做什么、输出什么”，而不是把所有接口细节塞在一个巨大脚本里。</p>
+          <div class="chips">
+            <span class="chip usecase">topic-literature-review</span>
+            <span class="chip usecase">literature-map-generator</span>
+            <span class="chip usecase">expert-institution-graph</span>
+            <span class="chip usecase">knowledge-base-health-audit</span>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-title">
+        <h2>真实调用逻辑：以专题综述为例</h2>
+        <p class="note">样例主题：丝绸之路经济带建设对新疆口岸经济的影响。下面不是抽象流程，而是这套插件实际应该遵循的 use-case → workflow → utility 调用链。</p>
+      </div>
+      <div class="sequence">
+        <div class="step">
+          <div>
+            <h3>用户点名 use-case：topic-literature-review</h3>
+            <p>用户只需要说“围绕某主题生成专题文献综述”。use-case 层负责识别这是综述任务，需要证据、统计、引用预览和 HTML 报告。</p>
+          </div>
+          <div class="outcome">进入业务入口：确定主题、限制召回数量、建立 run 目录。</div>
+        </div>
+        <div class="step">
+          <div>
+            <h3>调用 workflow：assemble-evidence-pack</h3>
+            <p>先组装证据包，不能跳过。它会调用检索、文档元数据和 chunk 查询，把候选文献整理为 evidence.json 与 answer_context.md。</p>
+          </div>
+          <div class="outcome">真实结果：专题综述样例召回 31 条，进入综述证据 12 条。</div>
+        </div>
+        <div class="step">
+          <div>
+            <h3>底层调用 utilities：检索与知识库读取</h3>
+            <p><code>istiqra-retrieval-search</code> 调检索接口；<code>kb-document-query</code> 补文档元数据；<code>kb-chunk-query</code> 读取片段、页码、bbox 等证据。</p>
+          </div>
+          <div class="outcome">可追溯产物：evidence.json、answer_context.md。</div>
+        </div>
+        <div class="step">
+          <div>
+            <h3>调用 workflow：analyze-literature-corpus</h3>
+            <p>对证据包做年份、期刊、作者、关键词和主题统计，再交给 <code>chart-renderer</code> 生成可视化分布。</p>
+          </div>
+          <div class="outcome">真实页面：包含年份分布、期刊分布、主题线索。</div>
+        </div>
+        <div class="step">
+          <div>
+            <h3>调用 workflow：build-citation-preview</h3>
+            <p>需要引用定位时，再调用 <code>minio-object-get</code> 与 <code>citation-preview-renderer</code> 生成 PDF 页面或 bbox 高亮预览。</p>
+          </div>
+          <div class="outcome">作用：让综述不是“空写”，而是能回到证据位置核验。</div>
+        </div>
+        <div class="step">
+          <div>
+            <h3>最终 use-case 汇总：生成 HTML 报告</h3>
+            <p>use-case 把证据、统计、提纲和引用候选交给 <code>html-report-renderer</code>，输出最终可读页面。</p>
+          </div>
+          <div class="outcome">最终结果：专题文献综述 HTML、JSON、Markdown 证据上下文。</div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-title">
+        <h2>不同类型 skill 的真实样例</h2>
+        <p class="note">下面每一行都是当前插件里真实存在的 skill，展示它属于哪一层、负责什么、输入输出是什么。</p>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>层级</th>
+            <th>真实 skill</th>
+            <th>适用场景</th>
+            <th>典型输入</th>
+            <th>典型输出</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="chip utility">utility</span></td>
+            <td><code>istiqra-retrieval-search</code></td>
+            <td>根据自然语言主题召回文献、chunk、召回类型、路径信息。</td>
+            <td>query、limit</td>
+            <td>检索结果 JSON，含 documentId、title、score、markdownUrl、pdfUrl。</td>
+          </tr>
+          <tr>
+            <td><span class="chip utility">utility</span></td>
+            <td><code>doris-sql-readonly</code></td>
+            <td>只读检查 Doris/Iceberg 表规模、字段、统计数据。</td>
+            <td>SELECT / SHOW / DESC</td>
+            <td>rows JSON；拒绝 DDL、DML、删除和写入。</td>
+          </tr>
+          <tr>
+            <td><span class="chip utility">utility</span></td>
+            <td><code>minio-object-get</code></td>
+            <td>按知识库路径读取 Markdown/PDF 对象状态或预览文本。</td>
+            <td>object path、preview bytes</td>
+            <td>对象 size、etag、content preview 或下载文件。</td>
+          </tr>
+          <tr>
+            <td><span class="chip workflow">workflow</span></td>
+            <td><code>assemble-evidence-pack</code></td>
+            <td>专题综述、地图、图谱都需要先拿证据包。</td>
+            <td>topic、limit</td>
+            <td>evidence.json、answer_context.md、证据表 HTML。</td>
+          </tr>
+          <tr>
+            <td><span class="chip workflow">workflow</span></td>
+            <td><code>build-literature-map</code></td>
+            <td>把证据包转为主题节点、文献节点和连接关系。</td>
+            <td>evidence.json</td>
+            <td>literature_map.json、literature_map.html。</td>
+          </tr>
+          <tr>
+            <td><span class="chip workflow">workflow</span></td>
+            <td><code>build-entity-graph</code></td>
+            <td>从文献里抽取作者、机构、期刊、关键词并建立关系。</td>
+            <td>evidence.json、document metadata</td>
+            <td>entities.json、graph.json、graph.html。</td>
+          </tr>
+          <tr>
+            <td><span class="chip usecase">use-case</span></td>
+            <td><code>topic-literature-review</code></td>
+            <td>面向用户的专题文献综述助手。</td>
+            <td>研究主题</td>
+            <td>综述提纲、证据卡片、年份/期刊分布、HTML 报告。</td>
+          </tr>
+          <tr>
+            <td><span class="chip usecase">use-case</span></td>
+            <td><code>knowledge-base-health-audit</code></td>
+            <td>面向运维的知识库巡检。</td>
+            <td>sample size、环境变量</td>
+            <td>健康评分、表规模、embedding 状态、MinIO 检查表。</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <div class="section-title">
+        <h2>一个完整业务场景：四个 use-case 如何共用底层能力</h2>
+        <p class="note">同一个主题可以触发不同 use-case。它们复用相同的 evidence、metadata、entity、render utilities，但最终交付不同。</p>
+      </div>
+      <div class="grid-2">
+        <article class="card">
+          <h3>场景 A：研究人员要写综述</h3>
+          <p>调用 <code>topic-literature-review</code>。它重点关注证据候选、主题线索、综述结构、年份和期刊分布。底层复用检索、chunk 查询、语料统计和 HTML 报告渲染。</p>
+          <div class="chips">
+            <span class="chip usecase">topic-literature-review</span>
+            <span class="chip workflow">assemble-evidence-pack</span>
+            <span class="chip workflow">analyze-literature-corpus</span>
+            <span class="chip utility">html-report-renderer</span>
+          </div>
+        </article>
+        <article class="card">
+          <h3>场景 B：负责人要看研究版图</h3>
+          <p>调用 <code>literature-map-generator</code> 和 <code>expert-institution-graph</code>。前者看主题与文献分布，后者看作者、机构、期刊、关键词网络。</p>
+          <div class="chips">
+            <span class="chip usecase">literature-map-generator</span>
+            <span class="chip usecase">expert-institution-graph</span>
+            <span class="chip workflow">build-literature-map</span>
+            <span class="chip workflow">build-entity-graph</span>
+            <span class="chip utility">graph-renderer</span>
+          </div>
+        </article>
+        <article class="card">
+          <h3>场景 C：运维人员要查知识库质量</h3>
+          <p>调用 <code>knowledge-base-health-audit</code>。它不从主题综述出发，而是检查 Doris 表规模、embedding 映射、Milvus collection 和 MinIO 对象可达性。</p>
+          <div class="chips">
+            <span class="chip usecase">knowledge-base-health-audit</span>
+            <span class="chip workflow">audit-knowledge-base</span>
+            <span class="chip utility">doris-catalog-inspect</span>
+            <span class="chip utility">kb-embedding-map-query</span>
+            <span class="chip utility">health-check-renderer</span>
+          </div>
+        </article>
+        <article class="card">
+          <h3>场景 D：未来扩展新能力</h3>
+          <p>如果以后加入表格可视化、视频生成、文献地图增强、PPT 生成，只需要新增 utility 或 workflow；旧 use-case 可以复用，新 use-case 也能组合。</p>
+          <div class="chips">
+            <span class="chip utility">chart-renderer</span>
+            <span class="chip utility">literature-map-renderer</span>
+            <span class="chip utility">future-video-renderer</span>
+            <span class="chip workflow">future-briefing-workflow</span>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-title">
+        <h2>已跑出的真实 HTML 样例</h2>
+        <p class="note">这些不是静态演示图，而是插件已经用真实主题跑出的 use-case 页面。点击标题可打开对应 HTML。</p>
+      </div>
+      <div class="sample">
+        <figure class="screenshot">
+          <a href="../runs/topic-literature-review/20260617_145335_丝绸之路经济带建设对新疆口岸经济的影响/previews/index.html">
+            <img src="../verification/screenshots/review.png" alt="专题文献综述页面截图" />
+          </a>
+          <figcaption>
+            <strong>专题文献综述助手</strong>：12 条证据、31 条总召回、年份分布、期刊分布、主题线索与证据卡片。
+          </figcaption>
+        </figure>
+        <figure class="screenshot">
+          <a href="../runs/literature-map-generator/20260617_145338_丝绸之路经济带建设对新疆口岸经济的影响/previews/literature_map.html">
+            <img src="../verification/screenshots/map.png" alt="文献地图页面截图" />
+          </a>
+          <figcaption>
+            <strong>文献地图生成器</strong>：20 个文献节点、88 个主题节点、100 条关系边、1993-2021 时间跨度。
+          </figcaption>
+        </figure>
+        <figure class="screenshot">
+          <a href="../runs/expert-institution-graph/20260617_145656_丝绸之路经济带建设对新疆口岸经济的影响/previews/graph.html">
+            <img src="../verification/screenshots/graph.png" alt="专家机构关系图谱页面截图" />
+          </a>
+          <figcaption>
+            <strong>专家/机构关系图谱</strong>：11 个作者实体、8 个机构实体、4 个期刊实体、115 条关系边。
+          </figcaption>
+        </figure>
+        <figure class="screenshot">
+          <a href="../runs/knowledge-base-health-audit/20260617_145342_health/previews/health.html">
+            <img src="../verification/screenshots/health.png" alt="知识库巡检页面截图" />
+          </a>
+          <figcaption>
+            <strong>知识库运维巡检</strong>：健康评分 100，文档 155652，chunk 1005722，embedding 映射 1980831。
+          </figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-title">
+        <h2>为什么不做成一个巨大 skill</h2>
+        <p class="note">大 skill 当然也能跑，但会让调用不稳定、上下文爆炸、失败难定位。三层结构的价值主要体现在下面四点。</p>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <h3>1. 降低误调用</h3>
+          <p>use-case 只暴露业务入口，模型不需要在 20 多个底层工具里猜。需要查文献就进综述或地图，需要运维就进巡检。</p>
+        </div>
+        <div class="card">
+          <h3>2. 中间产物可核验</h3>
+          <p>workflow 会产出 evidence.json、graph.json、health.json 这类中间文件。任何一步失败，都能定位是检索、SQL、MinIO 还是渲染问题。</p>
+        </div>
+        <div class="card">
+          <h3>3. 能复用，不重复造轮子</h3>
+          <p>assemble-evidence-pack 同时服务综述、地图、图谱；entity-extractor 同时服务图谱和主题分析；HTML 渲染器服务所有报告。</p>
+        </div>
+        <div class="card">
+          <h3>4. 后续扩展成本低</h3>
+          <p>未来新增“视频解读”“PPT 汇报”“表格分析”等，只需要新增渲染 utility 或 workflow，现有业务入口不用推倒重写。</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="callout">
+      <strong>推荐调用方式：</strong>
+      用户在 Codex 里说清楚业务目标，例如“使用 Istiqra Research Skills，围绕某主题生成专题综述、文献地图和专家机构图谱”。Codex 会从 use-case 层进入，按 workflow 层组织步骤，再调用 utility 层执行接口与渲染。
+    </section>
+
+    <div class="footer">
+      Generated for istiqra-research-skills · utilities / workflows / use-cases · verified with real use-case outputs
+    </div>
+  </main>
+</body>
+</html>

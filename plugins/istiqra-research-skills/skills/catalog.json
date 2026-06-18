@@ -1,0 +1,46 @@
+{
+  "utilities": [
+    "istiqra-retrieval-search",
+    "doris-sql-readonly",
+    "doris-catalog-inspect",
+    "kb-document-query",
+    "kb-chunk-query",
+    "kb-embedding-map-query",
+    "minio-object-get",
+    "html-report-renderer",
+    "chart-renderer",
+    "literature-map-renderer",
+    "entity-extractor",
+    "graph-renderer",
+    "citation-preview-renderer",
+    "health-check-renderer"
+  ],
+  "workflows": [
+    "assemble-evidence-pack",
+    "deep-read-literature",
+    "build-citation-preview",
+    "analyze-literature-corpus",
+    "build-literature-map",
+    "build-entity-graph",
+    "audit-knowledge-base"
+  ],
+  "usecases": [
+    "topic-literature-review",
+    "literature-map-generator",
+    "expert-institution-graph",
+    "knowledge-base-health-audit"
+  ],
+  "dependencies": {
+    "assemble-evidence-pack": ["istiqra-retrieval-search", "kb-document-query", "kb-chunk-query", "html-report-renderer"],
+    "deep-read-literature": ["kb-document-query", "kb-chunk-query", "minio-object-get", "html-report-renderer"],
+    "build-citation-preview": ["istiqra-retrieval-search", "minio-object-get", "citation-preview-renderer"],
+    "analyze-literature-corpus": ["assemble-evidence-pack", "chart-renderer"],
+    "build-literature-map": ["assemble-evidence-pack", "literature-map-renderer"],
+    "build-entity-graph": ["assemble-evidence-pack", "entity-extractor", "graph-renderer"],
+    "audit-knowledge-base": ["doris-sql-readonly", "doris-catalog-inspect", "kb-embedding-map-query", "minio-object-get", "health-check-renderer"],
+    "topic-literature-review": ["assemble-evidence-pack", "analyze-literature-corpus", "build-citation-preview", "html-report-renderer"],
+    "literature-map-generator": ["assemble-evidence-pack", "build-literature-map", "chart-renderer"],
+    "expert-institution-graph": ["assemble-evidence-pack", "build-entity-graph", "graph-renderer"],
+    "knowledge-base-health-audit": ["audit-knowledge-base", "health-check-renderer"]
+  }
+}

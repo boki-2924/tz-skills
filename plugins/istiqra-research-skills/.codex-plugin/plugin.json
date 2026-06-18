@@ -1,0 +1,27 @@
+{
+  "name": "istiqra-research-skills",
+  "version": "0.1.0+codex.20260618032437",
+  "description": "Istiqra \u4e2d\u6587\u6587\u732e\u7814\u7a76\u6280\u80fd\u63d2\u4ef6\uff0c\u63d0\u4f9b\u5b89\u5168\u68c0\u7d22\u3001Doris \u53ea\u8bfb\u67e5\u8be2\u3001MinIO \u539f\u6587\u8bfb\u53d6\u3001\u8bc1\u636e\u5305\u3001\u6587\u732e\u5730\u56fe\u3001\u4e13\u5bb6\u673a\u6784\u56fe\u8c31\u548c\u77e5\u8bc6\u5e93\u5de1\u68c0\u80fd\u529b\u3002",
+  "author": {
+    "name": "Local developer"
+  },
+  "homepage": "https://github.com/boki-2924/tz-skills",
+  "repository": "https://github.com/boki-2924/tz-skills.git",
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Istiqra Research Skills",
+    "shortDescription": "\u4e2d\u6587\u6587\u732e\u68c0\u7d22\u3001\u7efc\u8ff0\u3001\u5730\u56fe\u3001\u56fe\u8c31\u4e0e\u77e5\u8bc6\u5e93\u5de1\u68c0\u3002",
+    "longDescription": "Istiqra Research Skills \u5c06 Datonos Istiqra \u68c0\u7d22\u3001Doris/Iceberg \u53ea\u8bfb\u67e5\u8be2\u3001MinIO \u539f\u6587\u8bfb\u53d6\u3001HTML \u53ef\u89c6\u5316\u548c\u56fe\u8c31\u751f\u6210\u7ec4\u7ec7\u4e3a utilities\u3001workflows\u3001usecases \u4e09\u5c42 skills\u3002",
+    "developerName": "Local developer",
+    "category": "Productivity",
+    "capabilities": [
+      "\u6587\u732e\u68c0\u7d22",
+      "\u8bc1\u636e\u5305",
+      "HTML \u53ef\u89c6\u5316",
+      "\u6587\u732e\u5730\u56fe",
+      "\u4e13\u5bb6\u673a\u6784\u56fe\u8c31",
+      "\u77e5\u8bc6\u5e93\u5de1\u68c0"
+    ],
+    "defaultPrompt": "\u4f7f\u7528 Istiqra Research Skills \u56f4\u7ed5\u4e00\u4e2a\u4e2d\u6587\u7814\u7a76\u4e3b\u9898\u751f\u6210\u5e26\u8bc1\u636e\u548c\u53ef\u89c6\u5316\u7684\u5206\u6790\u7ed3\u679c\u3002"
+  }
+}
